@@ -5,17 +5,16 @@ defmodule Hyde.Router do
 
   plug Plug.Logger, log: :debug
 
+  plug Plug.Static,
+    at: "/static",
+    from: {:hyde, "priv/static"}
+
   plug :match
-
-  # after match, before dispatch
-  plug Plug.Parsers,
-    parsers: [:urlencoded, :multipart, :json],
-    pass:  ["*/*"],
-    json_decoder: Poison
-
   plug :dispatch
 
   get "/ping", do: send_resp(conn, 200, "OK")
+
+  post "/render", do: Hyde.Controller.render(conn)
 
   match _, do: send_resp(conn, 404, "Not Found")
 
